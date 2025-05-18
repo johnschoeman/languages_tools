@@ -1,0 +1,23 @@
+[package]
+name = "tonic_shared_state_stream"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+futures-signals = "0.3.34"
+prost = "0.13.5"
+tokio = {version = "1.44.1", features = ["full"]}
+tokio-stream = "0.1.17"
+tonic = "0.12.3"
+tonic-build = "0.12.3"
+
+[build-dependencies]
+tonic-build = "0.11.0"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
