@@ -1,27 +1,49 @@
 #include <stdio.h>
 
+// chp 3 : Pointers and Strings
 
-// chp 2 : Pointer types and Arrays
+char *my_strcpy(char *destination, const char *source) {
+    char *p = destination;
+    while (*source != '\0') {
+        *p++ = *source++;
+    }
+    *p = '\0';
+
+    return destination;
+}
 
 int main() {
-    int my_array[] = {1, 2, 3, 4, 5};
-    int *ptr;
+    char strA[80] = "A string to be used for demo purposes";
+    char strB[80];
 
-    int i;
-    // ptr = &my_array[0];
-    ptr = my_array;
-
-    printf("\n\n");
-
-    for (i = 0; i < 6; i++) {
-      printf("my_array[%d] = %d   ", i, my_array[i]);
-      // printf("ptr + %d = %d\n", i, *(ptr + i));
-      printf("ptr + %d = %d\n", i, *(ptr++));
-      // printf("ptr + %d = %d\n", i, *(++ptr));
-    }
+    my_strcpy(strB, strA);
+    puts(strA);
+    puts(strB);
 
     return 0;
 }
+
+// chp 2 : Pointer types and Arrays
+
+// int main() {
+//     int my_array[] = {1, 2, 3, 4, 5};
+//     int *ptr;
+//
+//     int i;
+//     // ptr = &my_array[0];
+//     ptr = my_array;
+//
+//     printf("\n\n");
+//
+//     for (i = 0; i < 6; i++) {
+//       printf("my_array[%d] = %d   ", i, my_array[i]);
+//       // printf("ptr + %d = %d\n", i, *(ptr + i));
+//       printf("ptr + %d = %d\n", i, *(ptr++));
+//       // printf("ptr + %d = %d\n", i, *(++ptr));
+//     }
+//
+//     return 0;
+// }
 
 // chp 1 : What is a pointer?
 
