@@ -2,37 +2,64 @@
 #include <string.h>
 #include <stdbool.h>
 
-// chp 5: Pointers and Structures
+// chp 6: Some more on Strings, and Arrays of Strings
 
-struct tag {
-    char lname[20];
-    char fname[20];
-    int age;
-    float rate;
-};
+#define ROWS 5
+#define COLS 10
 
-struct tag my_struct;
-void show_name(struct tag *p);
+int multi[ROWS][COLS];
 
 int main(void) {
-    struct tag *st_ptr;
-    st_ptr = &my_struct;
+  int row, col;
 
-    strcpy(my_struct.lname, "Smith");
-    strcpy(my_struct.fname, "John");
-    printf("Last name: %s\n", my_struct.lname);
-    printf("First name: %s\n", my_struct.fname);
-    my_struct.age = 25;
-    show_name(st_ptr);
+  for (row = 0; row < ROWS; row++) {
+    for (col = 0; col < COLS; col++) {
+      multi[row][col] = row * col;
+    }
+  }
 
-    return 0;
+  for (row = 0; row < ROWS; row++) {
+    for (col = 0; col < COLS; col++) {
+      printf("\n%d %d:", row, col);
+      printf("%d ", multi[row][col]);
+      printf("%d ", *(*(multi + row) + col));
+    }
+  }
+
+  return 0;
 }
 
-void show_name(struct tag *p) {
-  printf("Last name: %s\n", p->lname);
-  printf("First name: %s\n", p->fname);
-  printf("Age: %d\n", p->age);
-}
+// chp 5: Pointers and Structures
+
+// struct tag {
+//     char lname[20];
+//     char fname[20];
+//     int age;
+//     float rate;
+// };
+//
+// struct tag my_struct;
+// void show_name(struct tag *p);
+//
+// int main(void) {
+//     struct tag *st_ptr;
+//     st_ptr = &my_struct;
+//
+//     strcpy(my_struct.lname, "Smith");
+//     strcpy(my_struct.fname, "John");
+//     printf("Last name: %s\n", my_struct.lname);
+//     printf("First name: %s\n", my_struct.fname);
+//     my_struct.age = 25;
+//     show_name(st_ptr);
+//
+//     return 0;
+// }
+//
+// void show_name(struct tag *p) {
+//   printf("Last name: %s\n", p->lname);
+//   printf("First name: %s\n", p->fname);
+//   printf("Age: %d\n", p->age);
+// }
 
 // chp 4 : More on Strings
 
