@@ -2,32 +2,57 @@
 #include <string.h>
 #include <stdbool.h>
 
-// chp 6: Some more on Strings, and Arrays of Strings
+// chp 7: More on Multi-Dimensional Arrays
 
 #define ROWS 5
 #define COLS 10
 
-int multi[ROWS][COLS];
+void set_value(int m_array[][COLS])
+{
+    int row, col;
+    for (row = 0; row < ROWS; row++)
+    {
+        for (col = 0; col < COLS; col++)
+        {
+            m_array[row][col] = 1;
+        }
+    }
+}
 
 int main(void) {
-  int row, col;
+    int multi[ROWS][COLS];
 
-  for (row = 0; row < ROWS; row++) {
-    for (col = 0; col < COLS; col++) {
-      multi[row][col] = row * col;
-    }
-  }
+    set_value(multi);
 
-  for (row = 0; row < ROWS; row++) {
-    for (col = 0; col < COLS; col++) {
-      printf("\n%d %d:", row, col);
-      printf("%d ", multi[row][col]);
-      printf("%d ", *(*(multi + row) + col));
-    }
-  }
-
-  return 0;
+    return 0;
 }
+
+// chp 6: Some more on Strings, and Arrays of Strings
+
+// #define ROWS 5
+// #define COLS 10
+//
+// int multi[ROWS][COLS];
+//
+// int main(void) {
+//   int row, col;
+//
+//   for (row = 0; row < ROWS; row++) {
+//     for (col = 0; col < COLS; col++) {
+//       multi[row][col] = row * col;
+//     }
+//   }
+//
+//   for (row = 0; row < ROWS; row++) {
+//     for (col = 0; col < COLS; col++) {
+//       printf("\n%d %d:", row, col);
+//       printf("%d ", multi[row][col]);
+//       printf("%d ", *(*(multi + row) + col));
+//     }
+//   }
+//
+//   return 0;
+// }
 
 // chp 5: Pointers and Structures
 
