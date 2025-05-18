@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/jschoeman/workspace/personal/cpp/my_http",
+  "command": "/usr/bin/c++  -I/home/jschoeman/workspace/personal/cpp/my_http -std=gnu++11 -o CMakeFiles/MyHttp.dir/src/server.cpp.o -c /home/jschoeman/workspace/personal/cpp/my_http/src/server.cpp",
+  "file": "/home/jschoeman/workspace/personal/cpp/my_http/src/server.cpp"
+},
+{
+  "directory": "/home/jschoeman/workspace/personal/cpp/my_http",
+  "command": "/usr/bin/c++  -I/home/jschoeman/workspace/personal/cpp/my_http -std=gnu++11 -o CMakeFiles/MyHttp.dir/src/http_tcpServer.cpp.o -c /home/jschoeman/workspace/personal/cpp/my_http/src/http_tcpServer.cpp",
+  "file": "/home/jschoeman/workspace/personal/cpp/my_http/src/http_tcpServer.cpp"
+}
+]
