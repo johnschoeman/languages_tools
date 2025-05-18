@@ -15,3 +15,13 @@ We can "dereference" a pointer, i.e. refer to the value of that which it points 
 
 An "lvalue" of a variable is the value of its address, i.e. where it is stored in memory. The "rvalue" of a variable is the value stored in that variable (at that address).
 
+---
+
+```
+struct tag *st_ptr;
+st_ptr = &my_struct;
+
+(*st_ptr).field = 5;
+// same as
+st_ptr->field = 5;
+```

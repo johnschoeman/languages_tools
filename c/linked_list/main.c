@@ -2,76 +2,108 @@
 #include <string.h>
 #include <stdbool.h>
 
-// chp 4 : More on Strings
+// chp 5: Pointers and Structures
 
-int my_strlen(const char str[]) {
-    int len = 0;
-    while (str[len] != '\0') {
-      len++;
-    }
-    return len;
-}
+struct tag {
+    char lname[20];
+    char fname[20];
+    int age;
+    float rate;
+};
 
-char *my_strcat(char dest[], const char source[]) {
-    int dest_len = my_strlen(dest);
-    int i = 0;
-    while (source[i] != '\0') {
-      dest[dest_len + i] = source[i];
-      i++;
-    }
-    dest[dest_len + i] = '\0';
-    return dest;
-}
+struct tag my_struct;
+void show_name(struct tag *p);
 
-char *my_strchr(const char str[], int c) {
-    while (*str != '\0') {
-      if (*str == c) {
-        return (char *)str;
-      }
-      str++;
-    }
-    return NULL;
-}
+int main(void) {
+    struct tag *st_ptr;
+    st_ptr = &my_struct;
 
-char *my_strcpy(char dest[], const char source[]) {
-    int i = 0;
-    while (source[i] != '\0') {
-      dest[i] = source[i];
-      i++;
-    }
-    dest[i] = '\0';
-    return dest;
-}
-
-int main() {
-    char a[80] = "a";
-    char b[80] = "bbbb";
-    char c[80] = "cccc";
-
-    a[1] = 'x';
-    2[a] = 'y';
-
-    puts(a);
-
-    printf("Length of string: %d\n", my_strlen(a));
-    printf("Length of string: %zu\n", strlen(a));
-
-    printf("\n");
-    puts(strcat(b, a));
-    puts(my_strcat(c, a));
-
-    printf("\n");
-    // puts(strchr(a, 1));
-    char *ptr;
-    ptr = strchr(a, 'x');
-    printf("strchr(a, 1) = %s\n", ptr);
-
-    char *ptrB;
-    ptrB = my_strchr(a, 'x');
-    printf("my_strchr(a, 1) = %s\n", ptrB);
+    strcpy(my_struct.lname, "Smith");
+    strcpy(my_struct.fname, "John");
+    printf("Last name: %s\n", my_struct.lname);
+    printf("First name: %s\n", my_struct.fname);
+    my_struct.age = 25;
+    show_name(st_ptr);
 
     return 0;
 }
+
+void show_name(struct tag *p) {
+  printf("Last name: %s\n", p->lname);
+  printf("First name: %s\n", p->fname);
+  printf("Age: %d\n", p->age);
+}
+
+// chp 4 : More on Strings
+
+// int my_strlen(const char str[]) {
+//     int len = 0;
+//     while (str[len] != '\0') {
+//       len++;
+//     }
+//     return len;
+// }
+//
+// char *my_strcat(char dest[], const char source[]) {
+//     int dest_len = my_strlen(dest);
+//     int i = 0;
+//     while (source[i] != '\0') {
+//       dest[dest_len + i] = source[i];
+//       i++;
+//     }
+//     dest[dest_len + i] = '\0';
+//     return dest;
+// }
+//
+// char *my_strchr(const char str[], int c) {
+//     while (*str != '\0') {
+//       if (*str == c) {
+//         return (char *)str;
+//       }
+//       str++;
+//     }
+//     return NULL;
+// }
+//
+// char *my_strcpy(char dest[], const char source[]) {
+//     int i = 0;
+//     while (source[i] != '\0') {
+//       dest[i] = source[i];
+//       i++;
+//     }
+//     dest[i] = '\0';
+//     return dest;
+// }
+//
+// int main() {
+//     char a[80] = "a";
+//     char b[80] = "bbbb";
+//     char c[80] = "cccc";
+//
+//     a[1] = 'x';
+//     2[a] = 'y';
+//
+//     puts(a);
+//
+//     printf("Length of string: %d\n", my_strlen(a));
+//     printf("Length of string: %zu\n", strlen(a));
+//
+//     printf("\n");
+//     puts(strcat(b, a));
+//     puts(my_strcat(c, a));
+//
+//     printf("\n");
+//     // puts(strchr(a, 1));
+//     char *ptr;
+//     ptr = strchr(a, 'x');
+//     printf("strchr(a, 1) = %s\n", ptr);
+//
+//     char *ptrB;
+//     ptrB = my_strchr(a, 'x');
+//     printf("my_strchr(a, 1) = %s\n", ptrB);
+//
+//     return 0;
+// }
 
 // chp 3 : Pointers and Strings
 
