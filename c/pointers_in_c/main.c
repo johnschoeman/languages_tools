@@ -3,6 +3,89 @@
 #include <stdlib.h>
 #include <string.h>
 
+// chp 10: Pointers to Functions
+
+#define MAX_BUF 256
+
+long arr[10] = { 3, 7, 9, 2, 5, 1, 8, 4, 6, 0 };
+char arr2[5][20] = {  "Mickey Mouse",
+                      "Donald Duck",
+                      "Minnie Mouse",
+                      "Goofy",
+                      "Ted Jensen" };
+
+void bubble(void *p,
+            int width,
+            int N,
+            int(*fptr)(void *, void *));
+int compare_string(void *m, void *n);
+int compare_long(void *m, void *n);
+
+int main(void)
+{
+    int i;
+    putchar('\n');
+
+    for (i = 0; i < 10; i++) {
+        printf("%ld ", arr[i]);
+    }
+    putchar('\n');
+    for (i = 0; i < 5; i++) {
+        printf("%s\n", arr2[i]);
+    }
+
+    bubble(arr, 8, 10, compare_long);
+    bubble(arr2, 20, 5, compare_string);
+
+    putchar('\n');
+
+    for (i = 0; i < 10; i++) {
+        printf("%ld ", arr[i]);
+    }
+    putchar('\n');
+    for (i = 0; i < 5; i++) {
+        printf("%s\n", arr2[i]);
+    }
+
+    return 0;
+}
+
+void bubble(
+    void *p,
+    int width,
+    int N,
+    int(*fptr)(void *, void *)
+    )
+{
+    int i, j, k;
+    unsigned char buf[MAX_BUF];
+    unsigned char *bp = p;
+
+    for (i = N-1; i >= 0; i--) {
+        for (j = 1; j <= i; j++) {
+          k = fptr((void *)(bp + width*(j-1)), (void *)(bp + j*width));
+          if (k > 0) {
+             memcpy(buf, bp + width*(j-1), width);
+             memcpy(bp + width*(j-1), bp + j*width , width);
+             memcpy(bp + j*width, buf, width);
+            }
+        }
+    }
+}
+
+int compare_string(void *m, void *n) {
+    char *m1 = m;
+    char *n1 = n;
+    return (strcmp(m1,n1));
+}
+
+int compare_long(void *m, void *n) {
+  long *m1, *n1;
+  m1 = (long *)m;
+  n1 = (long *)n;
+  return (*m1 > *n1);
+}
+
 // chp 9: Pointers and Dynamic Allocation of Memory
 
 // // Method 1: Using malloc
@@ -28,33 +111,33 @@
 
 // Method 2
 
-int main(void) {
-    int nrows = 5;
-    int ncols = 10;
-    int row;
-    int **rowptr;
-    rowptr = malloc(nrows * sizeof(int *));
-    if (rowptr == NULL) {
-        puts("\nFailure to allocate room for row pointers.\n");
-        exit(0);
-    }
-
-    printf("\n\n\nIndex Pointer(hex)    Pointer(dec)   Diff.(dec)");
-
-    for (row = 0; row < nrows; row++) {
-         rowptr[row] = malloc(ncols * sizeof(int));
-         if (rowptr[row] == NULL) {
-           printf("\nFailure to allocate for row[%d]\n", row);
-           exit(0);
-         }
-         printf("\n%d     %p  %d", row, rowptr[row], *rowptr[row]);
-         if (row > 0) {
-             printf("            %d", (int)(rowptr[row] - rowptr[row - 1]));
-         }
-    }
-
-    return 0;
-}
+// int main(void) {
+//     int nrows = 5;
+//     int ncols = 10;
+//     int row;
+//     int **rowptr;
+//     rowptr = malloc(nrows * sizeof(int *));
+//     if (rowptr == NULL) {
+//         puts("\nFailure to allocate room for row pointers.\n");
+//         exit(0);
+//     }
+//
+//     printf("\n\n\nIndex Pointer(hex)    Pointer(dec)   Diff.(dec)");
+//
+//     for (row = 0; row < nrows; row++) {
+//          rowptr[row] = malloc(ncols * sizeof(int));
+//          if (rowptr[row] == NULL) {
+//            printf("\nFailure to allocate for row[%d]\n", row);
+//            exit(0);
+//          }
+//          printf("\n%d     %p  %d", row, rowptr[row], *rowptr[row]);
+//          if (row > 0) {
+//              printf("            %d", (int)(rowptr[row] - rowptr[row - 1]));
+//          }
+//     }
+//
+//     return 0;
+// }
 
 // chp 8: Pointers to Arrays
 
