@@ -1,11 +1,65 @@
-#include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// chp 9: Pointers and Dynamic Allocation of Memory
+
+// // Method 1: Using malloc
+// #define COLS 5
+//
+// typedef int RowArray[COLS];
+// RowArray *rptr;
+//
+// int main(void) {
+//     int nrows = 10;
+//     int row, col;
+//
+//     rptr = malloc(nrows * COLS * sizeof(int));
+//
+//     for (row = 0; row < nrows; row++) {
+//         for (col = 0; col < COLS; col++) {
+//             rptr[row][col] = 17;
+//         }
+//     }
+//
+//     return 0;
+// }
+
+// Method 2
+
+int main(void) {
+    int nrows = 5;
+    int ncols = 10;
+    int row;
+    int **rowptr;
+    rowptr = malloc(nrows * sizeof(int *));
+    if (rowptr == NULL) {
+        puts("\nFailure to allocate room for row pointers.\n");
+        exit(0);
+    }
+
+    printf("\n\n\nIndex Pointer(hex)    Pointer(dec)   Diff.(dec)");
+
+    for (row = 0; row < nrows; row++) {
+         rowptr[row] = malloc(ncols * sizeof(int));
+         if (rowptr[row] == NULL) {
+           printf("\nFailure to allocate for row[%d]\n", row);
+           exit(0);
+         }
+         printf("\n%d     %p  %d", row, rowptr[row], *rowptr[row]);
+         if (row > 0) {
+             printf("            %d", (int)(rowptr[row] - rowptr[row - 1]));
+         }
+    }
+
+    return 0;
+}
 
 // chp 8: Pointers to Arrays
 
-int (*p1d)[10]; // p1d is a pointer to an array of 10 integers
-int *p1d[10];   // p1d is an array of 10 pointers to integers
+// int (*p1d)[10]; // p1d is a pointer to an array of 10 integers
+// int *p1d[10];   // p1d is an array of 10 pointers to integers
 
 // chp 7: More on Multi-Dimensional Arrays
 
