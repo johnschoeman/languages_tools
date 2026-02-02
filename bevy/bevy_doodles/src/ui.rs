@@ -1,6 +1,6 @@
-use bevy::prelude::*;
 use crate::scene::{AutoRotation, RotatingCube};
-use crate::text_input::{TextInput, InputField};
+use crate::text_input::{InputField, TextInput};
+use bevy::prelude::*;
 
 // UI constants
 const UI_PADDING: f32 = 20.0;
@@ -153,7 +153,11 @@ fn spawn_button(parent: &mut ChildSpawnerCommands, text: &str, button_type: Rota
                 align_items: AlignItems::Center,
                 ..default()
             },
-            BackgroundColor(Color::srgb(BUTTON_BG_COLOR.0, BUTTON_BG_COLOR.1, BUTTON_BG_COLOR.2)),
+            BackgroundColor(Color::srgb(
+                BUTTON_BG_COLOR.0,
+                BUTTON_BG_COLOR.1,
+                BUTTON_BG_COLOR.2,
+            )),
             button_type,
         ))
         .with_children(|button| {
@@ -163,7 +167,11 @@ fn spawn_button(parent: &mut ChildSpawnerCommands, text: &str, button_type: Rota
                     font_size: BUTTON_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(BUTTON_TEXT_COLOR.0, BUTTON_TEXT_COLOR.1, BUTTON_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    BUTTON_TEXT_COLOR.0,
+                    BUTTON_TEXT_COLOR.1,
+                    BUTTON_TEXT_COLOR.2,
+                )),
             ));
         });
 }
@@ -187,12 +195,24 @@ pub fn handle_button_interaction(
                 _ => {
                     for mut transform in &mut cube_query {
                         match button_type {
-                            RotationButton::PlusX => transform.rotate_local_x(BUTTON_ROTATION_AMOUNT),
-                            RotationButton::MinusX => transform.rotate_local_x(-BUTTON_ROTATION_AMOUNT),
-                            RotationButton::PlusY => transform.rotate_local_y(BUTTON_ROTATION_AMOUNT),
-                            RotationButton::MinusY => transform.rotate_local_y(-BUTTON_ROTATION_AMOUNT),
-                            RotationButton::PlusZ => transform.rotate_local_z(BUTTON_ROTATION_AMOUNT),
-                            RotationButton::MinusZ => transform.rotate_local_z(-BUTTON_ROTATION_AMOUNT),
+                            RotationButton::PlusX => {
+                                transform.rotate_local_x(BUTTON_ROTATION_AMOUNT)
+                            }
+                            RotationButton::MinusX => {
+                                transform.rotate_local_x(-BUTTON_ROTATION_AMOUNT)
+                            }
+                            RotationButton::PlusY => {
+                                transform.rotate_local_y(BUTTON_ROTATION_AMOUNT)
+                            }
+                            RotationButton::MinusY => {
+                                transform.rotate_local_y(-BUTTON_ROTATION_AMOUNT)
+                            }
+                            RotationButton::PlusZ => {
+                                transform.rotate_local_z(BUTTON_ROTATION_AMOUNT)
+                            }
+                            RotationButton::MinusZ => {
+                                transform.rotate_local_z(-BUTTON_ROTATION_AMOUNT)
+                            }
                             RotationButton::ToggleAuto | RotationButton::Reset => {}
                         }
                     }
@@ -214,7 +234,11 @@ fn spawn_main_rotation_panel(commands: &mut Commands) {
                 padding: UiRect::all(Val::Px(PANEL_PADDING)),
                 ..default()
             },
-            BackgroundColor(Color::srgb(PANEL_BG_COLOR.0, PANEL_BG_COLOR.1, PANEL_BG_COLOR.2)),
+            BackgroundColor(Color::srgb(
+                PANEL_BG_COLOR.0,
+                PANEL_BG_COLOR.1,
+                PANEL_BG_COLOR.2,
+            )),
             ToggleableUi,
         ))
         .with_children(|panel: &mut ChildSpawnerCommands| {
@@ -225,13 +249,32 @@ fn spawn_main_rotation_panel(commands: &mut Commands) {
                     font_size: PANEL_TITLE_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(TITLE_TEXT_COLOR.0, TITLE_TEXT_COLOR.1, TITLE_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    TITLE_TEXT_COLOR.0,
+                    TITLE_TEXT_COLOR.1,
+                    TITLE_TEXT_COLOR.2,
+                )),
             ));
 
             // Rotation inputs
-            spawn_input_row(panel, "X:", &CUBE_CONFIG.main_rotation_x.to_string(), InputField::MainRotationX);
-            spawn_input_row(panel, "Y:", &CUBE_CONFIG.main_rotation_y.to_string(), InputField::MainRotationY);
-            spawn_input_row(panel, "Z:", &CUBE_CONFIG.main_rotation_z.to_string(), InputField::MainRotationZ);
+            spawn_input_row(
+                panel,
+                "X:",
+                &CUBE_CONFIG.main_rotation_x.to_string(),
+                InputField::MainRotationX,
+            );
+            spawn_input_row(
+                panel,
+                "Y:",
+                &CUBE_CONFIG.main_rotation_y.to_string(),
+                InputField::MainRotationY,
+            );
+            spawn_input_row(
+                panel,
+                "Z:",
+                &CUBE_CONFIG.main_rotation_z.to_string(),
+                InputField::MainRotationZ,
+            );
         });
 }
 
@@ -247,7 +290,11 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                 padding: UiRect::all(Val::Px(PANEL_PADDING)),
                 ..default()
             },
-            BackgroundColor(Color::srgb(PANEL_BG_COLOR.0, PANEL_BG_COLOR.1, PANEL_BG_COLOR.2)),
+            BackgroundColor(Color::srgb(
+                PANEL_BG_COLOR.0,
+                PANEL_BG_COLOR.1,
+                PANEL_BG_COLOR.2,
+            )),
             ToggleableUi,
         ))
         .with_children(|panel: &mut ChildSpawnerCommands| {
@@ -258,7 +305,11 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                     font_size: PANEL_TITLE_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(TITLE_TEXT_COLOR.0, TITLE_TEXT_COLOR.1, TITLE_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    TITLE_TEXT_COLOR.0,
+                    TITLE_TEXT_COLOR.1,
+                    TITLE_TEXT_COLOR.2,
+                )),
             ));
 
             // Rotation section
@@ -268,11 +319,30 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                     font_size: SECTION_HEADER_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(SECTION_TEXT_COLOR.0, SECTION_TEXT_COLOR.1, SECTION_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    SECTION_TEXT_COLOR.0,
+                    SECTION_TEXT_COLOR.1,
+                    SECTION_TEXT_COLOR.2,
+                )),
             ));
-            spawn_input_row(panel, "X:", &CUBE_CONFIG.leaf_rotation_x.to_string(), InputField::LeafRotationX);
-            spawn_input_row(panel, "Y:", &CUBE_CONFIG.leaf_rotation_y.to_string(), InputField::LeafRotationY);
-            spawn_input_row(panel, "Z:", &CUBE_CONFIG.leaf_rotation_z.to_string(), InputField::LeafRotationZ);
+            spawn_input_row(
+                panel,
+                "X:",
+                &CUBE_CONFIG.leaf_rotation_x.to_string(),
+                InputField::LeafRotationX,
+            );
+            spawn_input_row(
+                panel,
+                "Y:",
+                &CUBE_CONFIG.leaf_rotation_y.to_string(),
+                InputField::LeafRotationY,
+            );
+            spawn_input_row(
+                panel,
+                "Z:",
+                &CUBE_CONFIG.leaf_rotation_z.to_string(),
+                InputField::LeafRotationZ,
+            );
 
             // Translation section
             panel.spawn((
@@ -281,11 +351,30 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                     font_size: SECTION_HEADER_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(SECTION_TEXT_COLOR.0, SECTION_TEXT_COLOR.1, SECTION_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    SECTION_TEXT_COLOR.0,
+                    SECTION_TEXT_COLOR.1,
+                    SECTION_TEXT_COLOR.2,
+                )),
             ));
-            spawn_input_row(panel, "X:", &CUBE_CONFIG.leaf_position_x.to_string(), InputField::LeafTranslationX);
-            spawn_input_row(panel, "Y:", &CUBE_CONFIG.leaf_position_y.to_string(), InputField::LeafTranslationY);
-            spawn_input_row(panel, "Z:", &CUBE_CONFIG.leaf_position_z.to_string(), InputField::LeafTranslationZ);
+            spawn_input_row(
+                panel,
+                "X:",
+                &CUBE_CONFIG.leaf_position_x.to_string(),
+                InputField::LeafTranslationX,
+            );
+            spawn_input_row(
+                panel,
+                "Y:",
+                &CUBE_CONFIG.leaf_position_y.to_string(),
+                InputField::LeafTranslationY,
+            );
+            spawn_input_row(
+                panel,
+                "Z:",
+                &CUBE_CONFIG.leaf_position_z.to_string(),
+                InputField::LeafTranslationZ,
+            );
         });
 }
 
@@ -301,7 +390,11 @@ fn spawn_light_position_panel(commands: &mut Commands) {
                 padding: UiRect::all(Val::Px(PANEL_PADDING)),
                 ..default()
             },
-            BackgroundColor(Color::srgb(PANEL_BG_COLOR.0, PANEL_BG_COLOR.1, PANEL_BG_COLOR.2)),
+            BackgroundColor(Color::srgb(
+                PANEL_BG_COLOR.0,
+                PANEL_BG_COLOR.1,
+                PANEL_BG_COLOR.2,
+            )),
             ToggleableUi,
         ))
         .with_children(|panel: &mut ChildSpawnerCommands| {
@@ -312,17 +405,41 @@ fn spawn_light_position_panel(commands: &mut Commands) {
                     font_size: PANEL_TITLE_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(TITLE_TEXT_COLOR.0, TITLE_TEXT_COLOR.1, TITLE_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    TITLE_TEXT_COLOR.0,
+                    TITLE_TEXT_COLOR.1,
+                    TITLE_TEXT_COLOR.2,
+                )),
             ));
 
             // Position inputs
-            spawn_input_row(panel, "X:", &LIGHT_POSITION_X.to_string(), InputField::LightPositionX);
-            spawn_input_row(panel, "Y:", &LIGHT_POSITION_Y.to_string(), InputField::LightPositionY);
-            spawn_input_row(panel, "Z:", &LIGHT_POSITION_Z.to_string(), InputField::LightPositionZ);
+            spawn_input_row(
+                panel,
+                "X:",
+                &LIGHT_POSITION_X.to_string(),
+                InputField::LightPositionX,
+            );
+            spawn_input_row(
+                panel,
+                "Y:",
+                &LIGHT_POSITION_Y.to_string(),
+                InputField::LightPositionY,
+            );
+            spawn_input_row(
+                panel,
+                "Z:",
+                &LIGHT_POSITION_Z.to_string(),
+                InputField::LightPositionZ,
+            );
         });
 }
 
-fn spawn_input_row(parent: &mut ChildSpawnerCommands, label: &str, initial: &str, field_type: InputField) {
+fn spawn_input_row(
+    parent: &mut ChildSpawnerCommands,
+    label: &str,
+    initial: &str,
+    field_type: InputField,
+) {
     parent
         .spawn(Node {
             flex_direction: FlexDirection::Row,
@@ -338,7 +455,11 @@ fn spawn_input_row(parent: &mut ChildSpawnerCommands, label: &str, initial: &str
                     font_size: INPUT_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(TITLE_TEXT_COLOR.0, TITLE_TEXT_COLOR.1, TITLE_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    TITLE_TEXT_COLOR.0,
+                    TITLE_TEXT_COLOR.1,
+                    TITLE_TEXT_COLOR.2,
+                )),
             ));
 
             // Input field
@@ -352,7 +473,11 @@ fn spawn_input_row(parent: &mut ChildSpawnerCommands, label: &str, initial: &str
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                BackgroundColor(Color::srgb(INPUT_BG_COLOR.0, INPUT_BG_COLOR.1, INPUT_BG_COLOR.2)),
+                BackgroundColor(Color::srgb(
+                    INPUT_BG_COLOR.0,
+                    INPUT_BG_COLOR.1,
+                    INPUT_BG_COLOR.2,
+                )),
                 TextInput {
                     value: initial.to_string(),
                     is_focused: false,
@@ -368,7 +493,11 @@ fn spawn_input_row(parent: &mut ChildSpawnerCommands, label: &str, initial: &str
                         font_size: INPUT_FONT_SIZE,
                         ..default()
                     },
-                    TextColor(Color::srgb(TITLE_TEXT_COLOR.0, TITLE_TEXT_COLOR.1, TITLE_TEXT_COLOR.2)),
+                    TextColor(Color::srgb(
+                        TITLE_TEXT_COLOR.0,
+                        TITLE_TEXT_COLOR.1,
+                        TITLE_TEXT_COLOR.2,
+                    )),
                 ));
             });
 
@@ -379,7 +508,11 @@ fn spawn_input_row(parent: &mut ChildSpawnerCommands, label: &str, initial: &str
                     font_size: INPUT_FONT_SIZE,
                     ..default()
                 },
-                TextColor(Color::srgb(SECTION_TEXT_COLOR.0, SECTION_TEXT_COLOR.1, SECTION_TEXT_COLOR.2)),
+                TextColor(Color::srgb(
+                    SECTION_TEXT_COLOR.0,
+                    SECTION_TEXT_COLOR.1,
+                    SECTION_TEXT_COLOR.2,
+                )),
             ));
         });
 }

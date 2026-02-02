@@ -1,6 +1,6 @@
-use bevy::prelude::*;
-use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input::ButtonState;
+use bevy::input::keyboard::{Key, KeyboardInput};
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct TextInput {
@@ -117,10 +117,7 @@ pub fn handle_keyboard_input(
     }
 }
 
-pub fn update_cursor_blink(
-    time: Res<Time>,
-    mut input_query: Query<&mut TextInput>,
-) {
+pub fn update_cursor_blink(time: Res<Time>, mut input_query: Query<&mut TextInput>) {
     for mut input in &mut input_query {
         if input.is_focused {
             input.cursor_timer += time.delta_secs();

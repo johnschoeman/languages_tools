@@ -1,9 +1,9 @@
+use crate::scene::RotatingCube;
 use bevy::{
     app::AppExit,
     prelude::*,
-    render::view::screenshot::{save_to_disk, Screenshot},
+    render::view::screenshot::{Screenshot, save_to_disk},
 };
-use crate::scene::RotatingCube;
 
 // Debug constants
 const AXIS_LENGTH: f32 = 2.0;
@@ -50,20 +50,17 @@ pub fn setup_debug_ui(mut commands: Commands) {
         });
 }
 
-pub fn toggle_debug_mode(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    mut debug_mode: ResMut<DebugMode>,
-) {
+pub fn toggle_debug_mode(keyboard: Res<ButtonInput<KeyCode>>, mut debug_mode: ResMut<DebugMode>) {
     if keyboard.just_pressed(KeyCode::KeyD) {
         debug_mode.enabled = !debug_mode.enabled;
-        info!("Debug mode: {}", if debug_mode.enabled { "ON" } else { "OFF" });
+        info!(
+            "Debug mode: {}",
+            if debug_mode.enabled { "ON" } else { "OFF" }
+        );
     }
 }
 
-pub fn draw_debug_axes(
-    mut gizmos: Gizmos,
-    debug_mode: Res<DebugMode>,
-) {
+pub fn draw_debug_axes(mut gizmos: Gizmos, debug_mode: Res<DebugMode>) {
     if !debug_mode.enabled {
         return;
     }
@@ -101,7 +98,9 @@ pub fn update_debug_text(
                     euler.0.to_degrees(),
                     euler.1.to_degrees(),
                     euler.2.to_degrees(),
-                    axis.x, axis.y, axis.z,
+                    axis.x,
+                    axis.y,
+                    axis.z,
                     angle.to_degrees()
                 );
             }

@@ -1,5 +1,5 @@
+use crate::text_input::{InputField, TextInput};
 use bevy::prelude::*;
-use crate::text_input::{TextInput, InputField};
 
 // Rotation constants
 const KEYBOARD_ROTATION_SPEED: f32 = 2.0;
@@ -95,32 +95,42 @@ pub fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     // Main/central cube - this is the parent that everything rotates around
-    commands.spawn((
-        Mesh3d(meshes.add(Cuboid::new(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE))),
-        MeshMaterial3d(materials.add(Color::srgb(MAIN_CUBE_COLOR.0, MAIN_CUBE_COLOR.1, MAIN_CUBE_COLOR.2))),
-        Transform::from_xyz(0.0, CUBE_Y_POSITION, 0.0)
-            .with_rotation(Quat::from_euler(
+    commands
+        .spawn((
+            Mesh3d(meshes.add(Cuboid::new(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE))),
+            MeshMaterial3d(materials.add(Color::srgb(
+                MAIN_CUBE_COLOR.0,
+                MAIN_CUBE_COLOR.1,
+                MAIN_CUBE_COLOR.2,
+            ))),
+            Transform::from_xyz(0.0, CUBE_Y_POSITION, 0.0).with_rotation(Quat::from_euler(
                 EulerRot::XYZ,
                 MAIN_CUBE_INITIAL_ROTATION.0.to_radians(),
                 MAIN_CUBE_INITIAL_ROTATION.1.to_radians(),
                 MAIN_CUBE_INITIAL_ROTATION.2.to_radians(),
             )),
-        RotatingCube,
-    )).with_children(|parent| {
-        // Leaf cube - attached to main cube
-        parent.spawn((
-            Mesh3d(meshes.add(Cuboid::new(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE))),
-            MeshMaterial3d(materials.add(Color::srgb(LEAF_CUBE_COLOR.0, LEAF_CUBE_COLOR.1, LEAF_CUBE_COLOR.2))),
-            Transform::from_xyz(SECOND_CUBE_X_OFFSET, 0.0, 0.0)
-                .with_rotation(Quat::from_euler(
-                    EulerRot::XYZ,
-                    SECOND_CUBE_ROTATION_DEGREES.to_radians(),
-                    SECOND_CUBE_ROTATION_DEGREES.to_radians(),
-                    0.0
-                )),
-            LeafCube,
-        ));
-    });
+            RotatingCube,
+        ))
+        .with_children(|parent| {
+            // Leaf cube - attached to main cube
+            parent.spawn((
+                Mesh3d(meshes.add(Cuboid::new(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE))),
+                MeshMaterial3d(materials.add(Color::srgb(
+                    LEAF_CUBE_COLOR.0,
+                    LEAF_CUBE_COLOR.1,
+                    LEAF_CUBE_COLOR.2,
+                ))),
+                Transform::from_xyz(SECOND_CUBE_X_OFFSET, 0.0, 0.0).with_rotation(
+                    Quat::from_euler(
+                        EulerRot::XYZ,
+                        SECOND_CUBE_ROTATION_DEGREES.to_radians(),
+                        SECOND_CUBE_ROTATION_DEGREES.to_radians(),
+                        0.0,
+                    ),
+                ),
+                LeafCube,
+            ));
+        });
 
     // Light
     commands.spawn((
@@ -371,8 +381,16 @@ pub fn animate_cube_colors(
 
     // Smoothly interpolate current hues toward targets (very slow for subtle changes)
     let lerp_speed = time.delta_secs() * 0.05;
-    color_anim.main_cube_hue = lerp_hue(color_anim.main_cube_hue, color_anim.target_main_hue, lerp_speed);
-    color_anim.leaf_cube_hue = lerp_hue(color_anim.leaf_cube_hue, color_anim.target_leaf_hue, lerp_speed);
+    color_anim.main_cube_hue = lerp_hue(
+        color_anim.main_cube_hue,
+        color_anim.target_main_hue,
+        lerp_speed,
+    );
+    color_anim.leaf_cube_hue = lerp_hue(
+        color_anim.leaf_cube_hue,
+        color_anim.target_leaf_hue,
+        lerp_speed,
+    );
 
     // Convert HSL to RGB with pleasant saturation and lightness
     let main_rgb = hsl_to_rgb(color_anim.main_cube_hue, 0.5, 0.6); // Soft, pleasant colors
