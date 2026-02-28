@@ -1,6 +1,12 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git log *)",
+      "Bash(git status *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git diff)",
+      "Bash(git branch *)",
       "Bash(nix develop:*)",
       "Bash(./screenshot.sh:*)",
       "WebSearch",
@@ -8,7 +14,17 @@
       "WebFetch(domain:docs.rs)",
       "WebFetch(domain:bevy-cheatbook.github.io)",
       "WebFetch(domain:github.com)",
-      "Bash(cargo build:*)"
+      "Bash(cargo build:*)",
+      "Bash(rm commit-msg.txt)",
+      "Bash(cat commit-msg.txt *)",
+      "Skill(*)"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(git add *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)"
     ]
   }
 }
