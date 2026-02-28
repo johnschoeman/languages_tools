@@ -42,23 +42,20 @@ Use `/suggest-commit` to generate a commit message interactively.
 
 ## Development Environment
 
-This project uses Nix flakes for reproducible development environments. The flake.nix includes all necessary Linux dependencies for Bevy:
+This project uses [devenv](https://devenv.sh) for reproducible development environments. Configuration lives in `devenv.nix` (shell config) and `devenv.yaml` (nixpkgs input). Devenv provides:
 
 - System libraries: udev, alsa-lib, vulkan-loader, X11, Wayland
 - Build tools: pkg-config, cmake
-- Rust toolchain via rust-overlay
+- Rust stable toolchain (managed by devenv)
 
 ### Usage
 
 Enter the development environment:
 ```bash
-nix develop
+devenv shell
 ```
 
-Or run commands directly:
-```bash
-nix develop -c cargo run
-```
+Or use direnv for automatic activation (`.envrc` is already configured).
 
 ## Verifying Visual Changes
 
@@ -111,5 +108,6 @@ Don't batch updates to the end of a session — context can be lost if a session
 - `src/text_input.rs` - Text input focus management, keyboard input handling, cursor blink
 - `src/debug.rs` - Debug mode overlay, gizmo axes, screenshot systems (manual + auto)
 - `Cargo.toml` - Dependencies (Bevy 0.18)
-- `flake.nix` - Nix development environment
+- `devenv.nix` - Devenv shell configuration (Rust toolchain, system libraries)
+- `devenv.yaml` - Devenv inputs (nixpkgs source)
 - `screenshot.sh` - Automated screenshot capture script

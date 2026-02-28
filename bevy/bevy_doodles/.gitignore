@@ -7,3 +7,11 @@ Cargo.lock
 
 # Commit message scratch file
 commit-msg.txt
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv

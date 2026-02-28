@@ -17,7 +17,10 @@
       "Bash(cargo build:*)",
       "Bash(rm commit-msg.txt)",
       "Bash(cat commit-msg.txt *)",
-      "Skill(*)"
+      "Skill(*)",
+      "WebFetch(domain:devenv.sh)",
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles status)",
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles log --oneline -5)"
     ],
     "deny": [
       "Bash(git push *)",

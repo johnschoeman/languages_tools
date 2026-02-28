@@ -32,3 +32,31 @@ Two intersecting cubes on a ground plane. Colors slowly cycle through hues with 
 
 ### Remaining/Deferred
 - No known deferred tasks from this session
+
+## Session 2
+
+### Goals
+- Migrate dev environment from flake.nix to devenv
+
+### What Was Accomplished
+- **Devenv migration**: Replaced `flake.nix` + `flake.lock` with `devenv.nix`, `devenv.yaml`, `.envrc`
+- Used `devenv init` to bootstrap, then customized config for Bevy dependencies
+- `languages.rust.channel = "stable"` replaces manual rust-overlay setup
+- Added `rust-overlay` input (required by devenv for `languages.rust.channel`)
+- Updated X11 package names from deprecated `xorg.libX*` to toplevel `libx*`
+- Disabled cachix (not a trusted Nix user)
+- Updated `screenshot.sh` to use `devenv shell -- cargo run`
+- Updated `CLAUDE.md` development environment docs and project structure
+- Updated `.gitignore` with devenv-specific entries
+- Verified: `devenv shell` activates cleanly, `cargo build` succeeds
+
+### Current App State
+Same as Session 1 (no app code changes). Dev environment now uses devenv instead of nix flakes.
+
+### Decisions Made
+- `cachix.enable = false` to avoid noisy warnings (user not a trusted Nix user)
+- Use new toplevel `libx11`/`libxcursor`/`libxi`/`libxrandr` names instead of deprecated `xorg.*`
+- Keep `nixpkgs-unstable` as the nixpkgs source (matches original flake)
+
+### Remaining/Deferred
+- Cachix could be re-enabled after adding user to trusted-users in NixOS config

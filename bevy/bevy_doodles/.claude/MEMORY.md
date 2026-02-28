@@ -27,6 +27,12 @@
 - **Hue interpolation wrap-around**: Hue values are circular (0.0 == 1.0), need special lerp that takes the short path around the color wheel
 - **Duplicate constants**: `CUBE_CONFIG` in `ui.rs` and `MAIN_CUBE_INITIAL_ROTATION` in `scene.rs` must stay in sync manually
 
+## Nix/Devenv Notes
+
+- **Devenv `languages.rust.channel`** requires `rust-overlay` input: `devenv inputs add rust-overlay github:oxalica/rust-overlay --follows nixpkgs`
+- **Nixpkgs xorg deprecation**: `xorg.libX11` → `libx11`, `xorg.libXcursor` → `libxcursor`, `xorg.libXi` → `libxi`, `xorg.libXrandr` → `libxrandr` (as of nixpkgs-unstable Feb 2026)
+- **Cachix binary cache**: Requires trusted-user status in NixOS config; disable with `cachix.enable = false` if not available
+
 ## User Preferences
 
 - Prefers iterative development with visual verification via screenshots
