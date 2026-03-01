@@ -1,15 +1,30 @@
-use crate::scene::RotatingCube;
 use bevy::{
     app::AppExit,
     prelude::*,
     render::view::screenshot::{Screenshot, save_to_disk},
 };
 
-// Debug constants
 const AXIS_LENGTH: f32 = 2.0;
-
-// UI constants for debug panel
 const UI_PADDING: f32 = 20.0;
+
+pub struct DebugPlugin;
+
+impl Plugin for DebugPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_resource::<DebugMode>()
+            .add_systems(Startup, setup_debug_ui)
+            .add_systems(
+                Update,
+                (
+                    toggle_debug_mode,
+                    draw_debug_axes,
+                    update_debug_text,
+                    screenshot_on_f12,
+                    auto_screenshot,
+                ),
+            );
+    }
+}
 
 #[derive(Resource)]
 pub struct DebugMode {
@@ -18,7 +33,6 @@ pub struct DebugMode {
 
 impl Default for DebugMode {
     fn default() -> Self {
-        // Enable debug mode if AUTO_DEBUG env var is set
         let enabled = std::env::var("AUTO_DEBUG").is_ok();
         Self { enabled }
     }
@@ -27,8 +41,7 @@ impl Default for DebugMode {
 #[derive(Component)]
 pub struct DebugText;
 
-pub fn setup_debug_ui(mut commands: Commands) {
-    // Debug info panel (bottom-right corner)
+fn setup_debug_ui(mut commands: Commands) {
     commands
         .spawn(Node {
             position_type: PositionType::Absolute,
@@ -46,11 +59,12 @@ pub fn setup_debug_ui(mut commands: Commands) {
                 },
                 TextColor(Color::srgb(0.8, 0.8, 0.8)),
                 DebugText,
+                Visibility::Hidden,
             ));
         });
 }
 
-pub fn toggle_debug_mode(keyboard: Res<ButtonInput<KeyCode>>, mut debug_mode: ResMut<DebugMode>) {
+fn toggle_debug_mode(keyboard: Res<ButtonInput<KeyCode>>, mut debug_mode: ResMut<DebugMode>) {
     if keyboard.just_pressed(KeyCode::KeyD) {
         debug_mode.enabled = !debug_mode.enabled;
         info!(
@@ -60,63 +74,33 @@ pub fn toggle_debug_mode(keyboard: Res<ButtonInput<KeyCode>>, mut debug_mode: Re
     }
 }
 
-pub fn draw_debug_axes(mut gizmos: Gizmos, debug_mode: Res<DebugMode>) {
+fn draw_debug_axes(mut gizmos: Gizmos, debug_mode: Res<DebugMode>) {
     if !debug_mode.enabled {
         return;
     }
-
-    // Draw coordinate axes using gizmos.axes() which shows labeled axes
     gizmos.axes(Transform::IDENTITY, AXIS_LENGTH);
 }
 
 pub fn update_debug_text(
     debug_mode: Res<DebugMode>,
-    cube_query: Query<&Transform, With<RotatingCube>>,
     mut text_query: Query<(&mut Text, &mut Visibility), With<DebugText>>,
 ) {
     for (mut text, mut visibility) in &mut text_query {
         if debug_mode.enabled {
             *visibility = Visibility::Visible;
-
-            if let Ok(transform) = cube_query.single() {
-                let (axis, angle): (Vec3, f32) = transform.rotation.to_axis_angle();
-                let euler = transform.rotation.to_euler(EulerRot::XYZ);
-
-                **text = format!(
-                    "Debug Mode (D)\n\
-                    \n\
-                    Axes: Red=X, Green=Y, Blue=Z\n\
-                    \n\
-                    Rotation (Euler XYZ):\n\
-                    X: {:.1}°\n\
-                    Y: {:.1}°\n\
-                    Z: {:.1}°\n\
-                    \n\
-                    Axis-Angle:\n\
-                    Axis: ({:.2}, {:.2}, {:.2})\n\
-                    Angle: {:.1}°",
-                    euler.0.to_degrees(),
-                    euler.1.to_degrees(),
-                    euler.2.to_degrees(),
-                    axis.x,
-                    axis.y,
-                    axis.z,
-                    angle.to_degrees()
-                );
-            }
+            **text = "Debug Mode (D)\n\nAxes: Red=X, Green=Y, Blue=Z".to_string();
         } else {
             *visibility = Visibility::Hidden;
         }
     }
 }
 
-pub fn screenshot_on_f12(
+fn screenshot_on_f12(
     mut commands: Commands,
     keyboard: Res<ButtonInput<KeyCode>>,
     mut counter: Local<u32>,
 ) {
     if keyboard.just_pressed(KeyCode::F12) {
-        // Create tmp directory if it doesn't exist
         if let Err(e) = std::fs::create_dir_all("./tmp") {
             error!("Failed to create tmp directory: {}", e);
             return;
@@ -131,18 +115,16 @@ pub fn screenshot_on_f12(
     }
 }
 
-pub fn auto_screenshot(
+fn auto_screenshot(
     mut commands: Commands,
     time: Res<Time>,
     mut screenshot_taken: Local<bool>,
     mut exit: MessageWriter<AppExit>,
 ) {
-    // Check if AUTO_SCREENSHOT env var is set
     if std::env::var("AUTO_SCREENSHOT").is_err() {
         return;
     }
 
-    // Wait 1 second for scene to render, then take screenshot
     if !*screenshot_taken && time.elapsed_secs() > 1.0 {
         *screenshot_taken = true;
 
@@ -160,7 +142,6 @@ pub fn auto_screenshot(
             .observe(save_to_disk(path.to_string()));
     }
 
-    // Exit after screenshot has been saved (give it 1.5 seconds total)
     if *screenshot_taken && time.elapsed_secs() > 1.5 {
         info!("Exiting after auto-screenshot");
         exit.write(AppExit::Success);

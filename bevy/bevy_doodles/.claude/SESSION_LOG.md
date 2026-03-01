@@ -60,3 +60,34 @@ Same as Session 1 (no app code changes). Dev environment now uses devenv instead
 
 ### Remaining/Deferred
 - Cachix could be re-enabled after adding user to trusted-users in NixOS config
+
+## Session 3
+
+### Goals
+- Implement multi-doodle architecture with main menu and state-based navigation
+
+### What Was Accomplished
+- **State system**: `AppState` enum (Menu, Cubes) with Bevy `States` derive, `DespawnOnExit` for automatic entity cleanup
+- **Menu screen**: Dark background, centered "Bevy Doodles" title, "Cubes" button navigates to cubes doodle
+- **Plugin architecture**: Each doodle is a self-contained Bevy Plugin (`CubesDoodlePlugin`), shared systems in `TextInputPlugin` and `DebugPlugin`
+- **Directory restructure**: `shared/` for generic systems (text_input, debug), `doodles/cubes/` for cubes-specific code (components, scene, ui)
+- **Navigation**: Escape returns to menu (two presses if text input focused); back button in cubes UI
+- **Resource reset**: `AutoRotation` and `UiVisibility` reset to defaults on re-entering cubes
+- **Debug text split**: Global debug systems (toggle, axes, screenshots) in shared; cubes rotation readout in cubes plugin
+- **Stale focus cleanup**: Text input plugin auto-clears focus references to despawned entities
+- **Auto-screenshot**: Startup system navigates to Cubes when `AUTO_SCREENSHOT` env var is set
+
+### Current App State
+App starts at a dark menu screen with "Bevy Doodles" title and a "Cubes" button. Clicking Cubes opens the cubes doodle (identical to previous single-scene app). Escape or "Menu (Esc)" button returns to menu. Re-entering cubes starts fresh. Debug mode, screenshots, and all keyboard controls work as before.
+
+### Decisions Made
+- Compile-time state enum (one variant per doodle) over runtime registration
+- `DespawnOnExit(AppState::X)` on all root entities for cleanup; children auto-despawn with parent
+- Debug UI entity is persistent (no DespawnOnExit) so it works across all states
+- `navigate_back` system runs before `handle_keyboard_input` to get correct two-press Escape behavior
+- `InputFocusState` bug fixed: Escape now clears both `is_focused` and `focused_entity`
+- Camera per state: Menu spawns Camera2d, Cubes spawns Camera3d
+
+### Remaining/Deferred
+- Menu has no hover/press visual feedback on buttons
+- Debug text and light position panel overlap in bottom-right (pre-existing)

@@ -1,5 +1,8 @@
-use crate::text_input::{InputField, TextInput};
+use crate::app_state::AppState;
+use crate::shared::text_input::TextInput;
 use bevy::{camera::ScalingMode, prelude::*};
+
+use super::components::*;
 
 // Rotation constants
 const KEYBOARD_ROTATION_SPEED: f32 = 2.0;
@@ -16,10 +19,10 @@ const SECOND_CUBE_ROTATION_DEGREES: f32 = 45.0;
 const MAIN_CUBE_INITIAL_ROTATION: (f32, f32, f32) = (90.0, 0.0, -100.0);
 
 // Color constants
-const MAIN_CUBE_COLOR: (f32, f32, f32) = (0.3, 0.3, 0.3); // Dark gray
-const LEAF_CUBE_COLOR: (f32, f32, f32) = (0.5, 0.5, 0.5); // Medium gray
-const BACKGROUND_COLOR: (f32, f32, f32) = (0.85, 0.85, 0.85); // Light gray
-const GROUND_COLOR: (f32, f32, f32) = (1.0, 1.0, 1.0); // White
+const MAIN_CUBE_COLOR: (f32, f32, f32) = (0.3, 0.3, 0.3);
+const LEAF_CUBE_COLOR: (f32, f32, f32) = (0.5, 0.5, 0.5);
+const BACKGROUND_COLOR: (f32, f32, f32) = (0.85, 0.85, 0.85);
+const GROUND_COLOR: (f32, f32, f32) = (1.0, 1.0, 1.0);
 
 // Light constants
 const LIGHT_POSITION: (f32, f32, f32) = (-4.0, 12.0, 5.0);
@@ -27,29 +30,6 @@ const LIGHT_POSITION: (f32, f32, f32) = (-4.0, 12.0, 5.0);
 // Camera constants (isometric: equal distance along each axis)
 const CAMERA_DISTANCE: f32 = 10.0;
 const CAMERA_VIEWPORT_HEIGHT: f32 = 6.0;
-
-#[derive(Resource)]
-pub struct AutoRotation {
-    pub enabled: bool,
-}
-
-impl Default for AutoRotation {
-    fn default() -> Self {
-        Self { enabled: false }
-    }
-}
-
-#[derive(Component)]
-pub struct RotatingCube;
-
-#[derive(Component)]
-pub struct LeafCube;
-
-#[derive(Component)]
-pub struct SceneLight;
-
-#[derive(Component)]
-pub struct GroundPlane;
 
 pub fn setup(
     mut commands: Commands,
@@ -75,9 +55,9 @@ pub fn setup(
                 MAIN_CUBE_INITIAL_ROTATION.2.to_radians(),
             )),
             RotatingCube,
+            DespawnOnExit(AppState::Cubes),
         ))
         .with_children(|parent| {
-            // Leaf cube - attached to main cube
             parent.spawn((
                 Mesh3d(meshes.add(Cuboid::new(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE))),
                 MeshMaterial3d(materials.add(Color::srgb(
@@ -105,17 +85,19 @@ pub fn setup(
         },
         Transform::from_xyz(LIGHT_POSITION.0, LIGHT_POSITION.1, LIGHT_POSITION.2),
         SceneLight,
+        DespawnOnExit(AppState::Cubes),
     ));
 
-    // Ground plane to receive shadows
+    // Ground plane
     commands.spawn((
         Mesh3d(meshes.add(Plane3d::new(Vec3::Y, Vec2::splat(10.0)))),
         MeshMaterial3d(materials.add(Color::srgb(GROUND_COLOR.0, GROUND_COLOR.1, GROUND_COLOR.2))),
         Transform::from_xyz(0.0, -1.5, 0.0),
         GroundPlane,
+        DespawnOnExit(AppState::Cubes),
     ));
 
-    // Camera (isometric: orthographic projection at classic isometric angle)
+    // Camera (isometric)
     let d = CAMERA_DISTANCE;
     commands.spawn((
         Camera3d::default(),
@@ -127,6 +109,7 @@ pub fn setup(
         }),
         Transform::from_xyz(d, d, d)
             .looking_at(Vec3::new(0.0, CUBE_Y_POSITION, 0.0), Vec3::Y),
+        DespawnOnExit(AppState::Cubes),
     ));
 }
 
@@ -136,12 +119,10 @@ pub fn rotate_cube(
     mut auto_rotation: ResMut<AutoRotation>,
     mut query: Query<&mut Transform, With<RotatingCube>>,
 ) {
-    // Toggle auto-rotation with space bar
     if keyboard.just_pressed(KeyCode::Space) {
         auto_rotation.enabled = !auto_rotation.enabled;
     }
 
-    // Reset rotation with R key
     if keyboard.just_pressed(KeyCode::KeyR) {
         for mut transform in &mut query {
             transform.rotation = Quat::IDENTITY;
@@ -152,13 +133,11 @@ pub fn rotate_cube(
     let keyboard_delta = time.delta_secs() * KEYBOARD_ROTATION_SPEED;
 
     for mut transform in &mut query {
-        // Automatic rotation
         if auto_rotation.enabled {
             transform.rotate_y(time.delta_secs() * AUTO_ROTATION_SPEED_Y);
             transform.rotate_x(time.delta_secs() * AUTO_ROTATION_SPEED_X);
         }
 
-        // Individual axis controls
         if keyboard.pressed(KeyCode::KeyJ) {
             transform.rotate_local_x(keyboard_delta);
         }
@@ -185,7 +164,6 @@ pub fn apply_leaf_rotation_from_inputs(
     parent_query: Query<&Children, With<RotatingCube>>,
     mut leaf_query: Query<&mut Transform, With<LeafCube>>,
 ) {
-    // Collect rotation and translation values from inputs
     let mut rot_x = 0.0;
     let mut rot_y = 0.0;
     let mut rot_z = 0.0;
@@ -206,7 +184,6 @@ pub fn apply_leaf_rotation_from_inputs(
         }
     }
 
-    // Find the leaf cube and update its rotation and translation
     for children in &parent_query {
         for child in children.iter() {
             if let Ok(mut transform) = leaf_query.get_mut(child) {
@@ -227,23 +204,19 @@ pub fn sync_main_rotation_to_inputs(
     main_query: Query<&Transform, With<RotatingCube>>,
     mut input_query: Query<(&InputField, &mut TextInput)>,
 ) {
-    // Don't sync when autorotation is enabled to avoid jittery feedback loop
     if auto_rotation.enabled {
         return;
     }
 
-    // Get the current rotation of the main cube
     let Some(transform) = main_query.iter().next() else {
         return;
     };
 
-    // Convert quaternion to Euler angles (in radians)
     let (x, y, z) = transform.rotation.to_euler(EulerRot::XYZ);
 
-    // Convert to degrees and update text inputs (only if not focused)
     for (field, mut input) in &mut input_query {
         if input.is_focused {
-            continue; // Don't update while user is editing
+            continue;
         }
 
         let new_value = match field {
@@ -262,7 +235,6 @@ pub fn apply_main_rotation_from_inputs(
     input_query: Query<(&InputField, &TextInput)>,
     mut main_query: Query<&mut Transform, With<RotatingCube>>,
 ) {
-    // Check if any main rotation input changed
     let mut has_main_rotation_change = false;
     for field in &changed_query {
         match field {
@@ -274,12 +246,10 @@ pub fn apply_main_rotation_from_inputs(
         }
     }
 
-    // Only apply if a main rotation input actually changed
     if !has_main_rotation_change {
         return;
     }
 
-    // Collect rotation values from all inputs
     let mut rot_x = 0.0;
     let mut rot_y = 0.0;
     let mut rot_z = 0.0;
@@ -294,7 +264,6 @@ pub fn apply_main_rotation_from_inputs(
         }
     }
 
-    // Update main cube rotation
     for mut transform in &mut main_query {
         transform.rotation = Quat::from_euler(
             EulerRot::XYZ,
@@ -309,7 +278,6 @@ pub fn apply_light_position_from_inputs(
     input_query: Query<(&InputField, &TextInput)>,
     mut light_query: Query<&mut Transform, With<SceneLight>>,
 ) {
-    // Collect position values from inputs
     let mut pos_x = LIGHT_POSITION.0;
     let mut pos_y = LIGHT_POSITION.1;
     let mut pos_z = LIGHT_POSITION.2;
@@ -324,7 +292,6 @@ pub fn apply_light_position_from_inputs(
         }
     }
 
-    // Update light position
     for mut transform in &mut light_query {
         transform.translation = Vec3::new(pos_x, pos_y, pos_z);
     }

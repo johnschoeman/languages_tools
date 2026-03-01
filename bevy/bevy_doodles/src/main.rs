@@ -1,59 +1,48 @@
-use bevy::{light::PointLightShadowMap, prelude::*};
+use bevy::prelude::*;
 
-mod debug;
-mod scene;
-mod text_input;
-mod ui;
+mod app_state;
+mod doodles;
+mod menu;
+mod shared;
 
-use debug::{
-    DebugMode, auto_screenshot, draw_debug_axes, screenshot_on_f12, setup_debug_ui,
-    toggle_debug_mode, update_debug_text,
-};
-use scene::{
-    AutoRotation, apply_leaf_rotation_from_inputs, apply_light_position_from_inputs,
-    apply_main_rotation_from_inputs, rotate_cube, setup as setup_scene,
-    sync_main_rotation_to_inputs,
-};
-use text_input::{
-    InputFocusState, handle_keyboard_input, handle_text_input_focus, update_cursor_blink,
-    update_text_input_display,
-};
-use ui::{
-    UiVisibility, handle_button_interaction, setup_ui, toggle_ui_visibility, update_ui_visibility,
-};
+use app_state::AppState;
+use shared::text_input::InputFocusState;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .insert_resource(PointLightShadowMap { size: 4096 })
-        .init_resource::<AutoRotation>()
+        .init_state::<AppState>()
         .init_resource::<ClearColor>()
-        .init_resource::<DebugMode>()
-        .init_resource::<InputFocusState>()
-        .init_resource::<UiVisibility>()
-        .add_systems(Startup, (setup_scene, setup_ui, setup_debug_ui))
+        .add_plugins((
+            shared::text_input::TextInputPlugin,
+            shared::debug::DebugPlugin,
+            menu::MenuPlugin,
+            doodles::cubes::CubesDoodlePlugin,
+        ))
+        .add_systems(Startup, auto_navigate_for_screenshot)
         .add_systems(
             Update,
-            (rotate_cube, handle_button_interaction, screenshot_on_f12),
+            navigate_back.before(shared::text_input::handle_keyboard_input),
         )
-        .add_systems(
-            Update,
-            (toggle_debug_mode, draw_debug_axes, update_debug_text),
-        )
-        .add_systems(Update, (toggle_ui_visibility, update_ui_visibility))
-        .add_systems(
-            Update,
-            (
-                handle_text_input_focus,
-                handle_keyboard_input,
-                update_cursor_blink,
-                update_text_input_display,
-            ),
-        )
-        .add_systems(Update, apply_leaf_rotation_from_inputs)
-        .add_systems(Update, sync_main_rotation_to_inputs)
-        .add_systems(Update, apply_main_rotation_from_inputs)
-        .add_systems(Update, apply_light_position_from_inputs)
-        .add_systems(Update, auto_screenshot)
         .run();
+}
+
+fn navigate_back(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    focus_state: Res<InputFocusState>,
+    current_state: Res<State<AppState>>,
+    mut next_state: ResMut<NextState<AppState>>,
+) {
+    if keyboard.just_pressed(KeyCode::Escape)
+        && focus_state.focused_entity.is_none()
+        && *current_state.get() != AppState::Menu
+    {
+        next_state.set(AppState::Menu);
+    }
+}
+
+fn auto_navigate_for_screenshot(mut next_state: ResMut<NextState<AppState>>) {
+    if std::env::var("AUTO_SCREENSHOT").is_ok() {
+        next_state.set(AppState::Cubes);
+    }
 }

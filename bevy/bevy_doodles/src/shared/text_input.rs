@@ -2,6 +2,23 @@ use bevy::input::ButtonState;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
 
+pub struct TextInputPlugin;
+
+impl Plugin for TextInputPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_resource::<InputFocusState>().add_systems(
+            Update,
+            (
+                handle_text_input_focus,
+                handle_keyboard_input,
+                update_cursor_blink,
+                update_text_input_display,
+                cleanup_stale_focus,
+            ),
+        );
+    }
+}
+
 #[derive(Component)]
 pub struct TextInput {
     pub value: String,
@@ -10,43 +27,21 @@ pub struct TextInput {
     pub cursor_timer: f32,
 }
 
-#[derive(Component)]
-pub enum InputField {
-    MainRotationX,
-    MainRotationY,
-    MainRotationZ,
-    LeafRotationX,
-    LeafRotationY,
-    LeafRotationZ,
-    LeafTranslationX,
-    LeafTranslationY,
-    LeafTranslationZ,
-    LightPositionX,
-    LightPositionY,
-    LightPositionZ,
-}
-
 #[derive(Resource, Default)]
 pub struct InputFocusState {
     pub focused_entity: Option<Entity>,
 }
 
 fn is_valid_char(c: &str, current_value: &str) -> bool {
-    // Allow digits
     if c.chars().all(|ch| ch.is_ascii_digit()) {
         return true;
     }
-
-    // Allow minus only at start
     if c == "-" && current_value.is_empty() {
         return true;
     }
-
-    // Allow decimal point only once
     if c == "." && !current_value.contains('.') {
         return true;
     }
-
     false
 }
 
@@ -57,7 +52,6 @@ pub fn handle_text_input_focus(
 ) {
     for (interaction, entity) in &interaction_query {
         if *interaction == Interaction::Pressed {
-            // Check if this entity has a TextInput component
             if all_inputs.get(entity).is_ok() {
                 // Clear previous focus
                 if let Some(prev_entity) = focus_state.focused_entity {
@@ -82,7 +76,7 @@ pub fn handle_text_input_focus(
 
 pub fn handle_keyboard_input(
     mut keyboard_events: MessageReader<KeyboardInput>,
-    focus_state: Res<InputFocusState>,
+    mut focus_state: ResMut<InputFocusState>,
     mut input_query: Query<&mut TextInput>,
 ) {
     let Some(focused_entity) = focus_state.focused_entity else {
@@ -109,8 +103,8 @@ pub fn handle_keyboard_input(
                 input.value.pop();
             }
             Key::Escape => {
-                // Clear focus
                 input.is_focused = false;
+                focus_state.focused_entity = None;
             }
             _ => {}
         }
@@ -143,6 +137,17 @@ pub fn update_text_input_display(
                 };
                 **text = format!("{}{}", input.value, cursor);
             }
+        }
+    }
+}
+
+fn cleanup_stale_focus(
+    mut focus_state: ResMut<InputFocusState>,
+    input_query: Query<&TextInput>,
+) {
+    if let Some(entity) = focus_state.focused_entity {
+        if input_query.get(entity).is_err() {
+            focus_state.focused_entity = None;
         }
     }
 }

@@ -102,12 +102,31 @@ Don't batch updates to the end of a session — context can be lost if a session
 
 ## Project Structure
 
-- `src/main.rs` - App entry point, plugin/resource/system registration
-- `src/scene.rs` - 3D scene setup (cubes, light, ground, camera), rotation systems, color animation
-- `src/ui.rs` - UI layout (buttons, input panels), button interaction handling, UI visibility toggle
-- `src/text_input.rs` - Text input focus management, keyboard input handling, cursor blink
-- `src/debug.rs` - Debug mode overlay, gizmo axes, screenshot systems (manual + auto)
+```
+src/
+  main.rs                    -- Plugin registration, state init, navigate_back system
+  app_state.rs               -- AppState enum (Menu, Cubes)
+  menu.rs                    -- MenuPlugin: menu UI, button interaction
+  shared/
+    mod.rs
+    text_input.rs            -- TextInputPlugin (generic, no doodle-specific code)
+    debug.rs                 -- DebugPlugin (toggle, axes, screenshots)
+  doodles/
+    mod.rs
+    cubes/
+      mod.rs                 -- CubesDoodlePlugin, resource reset, cubes debug text
+      components.rs          -- RotatingCube, LeafCube, SceneLight, GroundPlane,
+                                AutoRotation, UiVisibility, ToggleableUi,
+                                RotationButton, InputField, BackButton
+      scene.rs               -- 3D scene setup, rotation, input sync systems
+      ui.rs                  -- Cubes-specific UI panels, buttons, back button
+```
+
 - `Cargo.toml` - Dependencies (Bevy 0.18)
 - `devenv.nix` - Devenv shell configuration (Rust toolchain, system libraries)
 - `devenv.yaml` - Devenv inputs (nixpkgs source)
 - `screenshot.sh` - Automated screenshot capture script
+
+### Architecture
+
+Each doodle is a Bevy `Plugin` with its own state variant in `AppState`. Doodles register `OnEnter`/`Update` systems gated on their state. Entity cleanup uses `DespawnOnExit<AppState>` on root entities. Shared systems (text input, debug, screenshots) run globally. Navigation: Escape returns to menu (two presses if input focused).
