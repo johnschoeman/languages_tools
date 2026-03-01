@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{light::PointLightShadowMap, prelude::*};
 
 mod debug;
 mod scene;
@@ -10,9 +10,9 @@ use debug::{
     toggle_debug_mode, update_debug_text,
 };
 use scene::{
-    AutoRotation, ColorAnimation, animate_cube_colors, apply_leaf_rotation_from_inputs,
-    apply_light_position_from_inputs, apply_main_rotation_from_inputs, rotate_cube,
-    setup as setup_scene, sync_main_rotation_to_inputs,
+    AutoRotation, apply_leaf_rotation_from_inputs, apply_light_position_from_inputs,
+    apply_main_rotation_from_inputs, rotate_cube, setup as setup_scene,
+    sync_main_rotation_to_inputs,
 };
 use text_input::{
     InputFocusState, handle_keyboard_input, handle_text_input_focus, update_cursor_blink,
@@ -25,8 +25,8 @@ use ui::{
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .insert_resource(PointLightShadowMap { size: 4096 })
         .init_resource::<AutoRotation>()
-        .init_resource::<ColorAnimation>()
         .init_resource::<ClearColor>()
         .init_resource::<DebugMode>()
         .init_resource::<InputFocusState>()
@@ -54,7 +54,6 @@ fn main() {
         .add_systems(Update, sync_main_rotation_to_inputs)
         .add_systems(Update, apply_main_rotation_from_inputs)
         .add_systems(Update, apply_light_position_from_inputs)
-        .add_systems(Update, animate_cube_colors)
         .add_systems(Update, auto_screenshot)
         .run();
 }

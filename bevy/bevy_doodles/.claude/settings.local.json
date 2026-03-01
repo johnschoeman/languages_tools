@@ -20,7 +20,12 @@
       "Skill(*)",
       "WebFetch(domain:devenv.sh)",
       "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles status)",
-      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles log --oneline -5)"
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles log --oneline -5)",
+      "Bash(devenv shell:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles diff)",
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles diff --staged)"
     ],
     "deny": [
       "Bash(git push *)",

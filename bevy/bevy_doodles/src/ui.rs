@@ -48,9 +48,9 @@ struct CubeConfig {
 }
 
 const CUBE_CONFIG: CubeConfig = CubeConfig {
-    main_rotation_x: 115.0,
+    main_rotation_x: 90.0,
     main_rotation_y: 0.0,
-    main_rotation_z: -45.0,
+    main_rotation_z: -100.0,
     leaf_rotation_x: 0.0,
     leaf_rotation_y: 45.0,
     leaf_rotation_z: 45.0,
@@ -61,8 +61,8 @@ const CUBE_CONFIG: CubeConfig = CubeConfig {
 
 // Light position constants (matches LIGHT_POSITION in scene.rs)
 const LIGHT_POSITION_X: f32 = -4.0;
-const LIGHT_POSITION_Y: f32 = 6.0;
-const LIGHT_POSITION_Z: f32 = 4.0;
+const LIGHT_POSITION_Y: f32 = 12.0;
+const LIGHT_POSITION_Z: f32 = 5.0;
 
 #[derive(Resource)]
 pub struct UiVisibility {
