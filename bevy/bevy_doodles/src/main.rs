@@ -18,6 +18,7 @@ fn main() {
             shared::debug::DebugPlugin,
             menu::MenuPlugin,
             doodles::cubes::CubesDoodlePlugin,
+            doodles::cube_projection::CubeProjectionPlugin,
         ))
         .add_systems(Startup, auto_navigate_for_screenshot)
         .add_systems(

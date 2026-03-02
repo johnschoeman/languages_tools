@@ -25,7 +25,8 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles diff)",
-      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles diff --staged)"
+      "Bash(git -C /home/john/workspace/languages_tools/bevy/bevy_doodles diff --staged)",
+      "Bash(AUTO_SCREENSHOT=1 AUTO_SCREENSHOT_STATE=CubeProjection ./screenshot.sh:*)"
     ],
     "deny": [
       "Bash(git push *)",

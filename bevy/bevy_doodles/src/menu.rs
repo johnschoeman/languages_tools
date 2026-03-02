@@ -93,6 +93,39 @@ fn setup_menu(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
                         )),
                     ));
                 });
+
+            // Cube Projection button
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(BUTTON_WIDTH),
+                        height: Val::Px(BUTTON_HEIGHT),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    BackgroundColor(Color::srgb(
+                        BUTTON_BG_COLOR.0,
+                        BUTTON_BG_COLOR.1,
+                        BUTTON_BG_COLOR.2,
+                    )),
+                    MenuButton(AppState::CubeProjection),
+                ))
+                .with_children(|button| {
+                    button.spawn((
+                        Text::new("Cube Projection"),
+                        TextFont {
+                            font_size: BUTTON_FONT_SIZE,
+                            ..default()
+                        },
+                        TextColor(Color::srgb(
+                            BUTTON_TEXT_COLOR.0,
+                            BUTTON_TEXT_COLOR.1,
+                            BUTTON_TEXT_COLOR.2,
+                        )),
+                    ));
+                });
         });
 }
 
