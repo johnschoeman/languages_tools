@@ -1,5 +1,6 @@
 use bevy::{camera::ScalingMode, prelude::*};
 
+use super::components::ProjectedCube;
 use crate::app_state::AppState;
 
 const BACKGROUND_COLOR: (f32, f32, f32) = (0.85, 0.85, 0.85);
@@ -30,6 +31,7 @@ pub fn setup(
     commands.spawn((
         Mesh3d(meshes.add(Cuboid::new(1.0, 1.0, 1.0))),
         MeshMaterial3d(materials.add(Color::srgb(CUBE_COLOR.0, CUBE_COLOR.1, CUBE_COLOR.2))),
+        ProjectedCube,
         DespawnOnExit(AppState::CubeProjection),
     ));
 
@@ -44,8 +46,7 @@ pub fn setup(
         DespawnOnExit(AppState::CubeProjection),
     ));
 
-    // Isometric camera
-    let d = CAMERA_DISTANCE;
+    // Camera: Z points out of screen, slight X/Y tilt for 3D perspective
     commands.spawn((
         Camera3d::default(),
         Projection::from(OrthographicProjection {
@@ -54,7 +55,8 @@ pub fn setup(
             },
             ..OrthographicProjection::default_3d()
         }),
-        Transform::from_xyz(d, d, d).looking_at(Vec3::ZERO, Vec3::Y),
+        Transform::from_xyz(0.0, 0.0, CAMERA_DISTANCE)
+            .looking_at(Vec3::ZERO, Vec3::Y),
         DespawnOnExit(AppState::CubeProjection),
     ));
 
