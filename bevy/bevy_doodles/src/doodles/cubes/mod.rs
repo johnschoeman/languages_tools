@@ -25,6 +25,7 @@ impl Plugin for CubesDoodlePlugin {
                 (
                     scene::rotate_cube,
                     ui::handle_button_interaction,
+                    ui::handle_increment_button,
                     ui::handle_back_button,
                     ui::toggle_ui_visibility,
                     ui::update_ui_visibility,

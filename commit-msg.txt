@@ -1,0 +1,17 @@
+Replace axis buttons with increment inputs
+
+Why:
+
+Per-axis rotation buttons and keyboard shortcuts were coarse-grained
+and disconnected from the input fields they affected. Pairing
+increment/decrement buttons directly with each rotation input field
+gives a tighter mapping between control and value.
+
+This commit:
+
+- Replace RotationButton axis variants with IncrementButton component
+  carrying a target InputField and delta value
+- Add ▼/▲ buttons flanking rotation input rows
+- Remove keyboard rotation shortcuts (J/U/K/I/L/O)
+- Switch camera to head-on view (looking down Z axis)
+- Add handle_increment_button system

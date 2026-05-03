@@ -41,15 +41,9 @@ pub struct ToggleableUi;
 pub enum RotationButton {
     ToggleAuto,
     Reset,
-    PlusX,
-    MinusX,
-    PlusY,
-    MinusY,
-    PlusZ,
-    MinusZ,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy, PartialEq, Eq)]
 pub enum InputField {
     MainRotationX,
     MainRotationY,
@@ -63,6 +57,12 @@ pub enum InputField {
     LightPositionX,
     LightPositionY,
     LightPositionZ,
+}
+
+#[derive(Component)]
+pub struct IncrementButton {
+    pub target: InputField,
+    pub delta: f32,
 }
 
 #[derive(Component)]

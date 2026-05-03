@@ -13,9 +13,6 @@ const BUTTON_FONT_SIZE: f32 = 10.0;
 const BUTTON_BG_COLOR: (f32, f32, f32) = (0.15, 0.15, 0.15);
 const BUTTON_TEXT_COLOR: (f32, f32, f32) = (0.9, 0.9, 0.9);
 
-// Button rotation amount
-const BUTTON_ROTATION_AMOUNT: f32 = 0.1;
-
 // Input panel constants
 const PANEL_BG_COLOR: (f32, f32, f32) = (0.1, 0.1, 0.1);
 const PANEL_PADDING: f32 = 15.0;
@@ -35,6 +32,10 @@ const SECTION_HEADER_FONT_SIZE: f32 = 14.0;
 const INPUT_FONT_SIZE: f32 = 10.0;
 const TITLE_TEXT_COLOR: (f32, f32, f32) = (0.9, 0.9, 0.9);
 const SECTION_TEXT_COLOR: (f32, f32, f32) = (0.7, 0.7, 0.7);
+
+// Increment button constants
+const INCREMENT_BUTTON_SIZE: f32 = 30.0;
+const INCREMENT_AMOUNT: f32 = 5.0;
 
 // Initial configuration values
 struct CubeConfig {
@@ -110,7 +111,6 @@ pub fn setup_ui(mut commands: Commands) {
             Node {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
-                justify_content: JustifyContent::SpaceBetween,
                 padding: UiRect::new(
                     Val::Px(UI_PADDING),
                     Val::Px(UI_PADDING),
@@ -133,25 +133,6 @@ pub fn setup_ui(mut commands: Commands) {
                 .with_children(|panel| {
                     spawn_button(panel, "⏯ Auto (Space)", RotationButton::ToggleAuto);
                     spawn_button(panel, "↺ Reset (R)", RotationButton::Reset);
-                });
-
-            // Right side button panel for individual axis rotation
-            parent
-                .spawn(Node {
-                    position_type: PositionType::Absolute,
-                    right: Val::Px(UI_PADDING),
-                    top: Val::Px(UI_PADDING + BUTTON_HEIGHT + BUTTON_SPACING),
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(BUTTON_SPACING),
-                    ..default()
-                })
-                .with_children(|panel| {
-                    spawn_button(panel, "+X (J)", RotationButton::PlusX);
-                    spawn_button(panel, "-X (U)", RotationButton::MinusX);
-                    spawn_button(panel, "+Y (K)", RotationButton::PlusY);
-                    spawn_button(panel, "-Y (I)", RotationButton::MinusY);
-                    spawn_button(panel, "+Z (L)", RotationButton::PlusZ);
-                    spawn_button(panel, "-Z (O)", RotationButton::MinusZ);
                 });
         });
 
@@ -211,31 +192,24 @@ pub fn handle_button_interaction(
                         transform.rotation = Quat::IDENTITY;
                     }
                 }
-                _ => {
-                    for mut transform in &mut cube_query {
-                        match button_type {
-                            RotationButton::PlusX => {
-                                transform.rotate_local_x(BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::MinusX => {
-                                transform.rotate_local_x(-BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::PlusY => {
-                                transform.rotate_local_y(BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::MinusY => {
-                                transform.rotate_local_y(-BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::PlusZ => {
-                                transform.rotate_local_z(BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::MinusZ => {
-                                transform.rotate_local_z(-BUTTON_ROTATION_AMOUNT)
-                            }
-                            RotationButton::ToggleAuto | RotationButton::Reset => {}
-                        }
-                    }
-                }
+            }
+        }
+    }
+}
+
+pub fn handle_increment_button(
+    button_query: Query<(&Interaction, &IncrementButton), Changed<Interaction>>,
+    mut input_query: Query<(&InputField, &mut TextInput)>,
+) {
+    for (interaction, button) in &button_query {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+
+        for (field, mut input) in &mut input_query {
+            if *field == button.target {
+                let current: f32 = input.value.parse().unwrap_or(0.0);
+                input.value = format!("{:.0}", current + button.delta);
             }
         }
     }
@@ -291,18 +265,21 @@ fn spawn_main_rotation_panel(commands: &mut Commands) {
                 "X:",
                 &CUBE_CONFIG.main_rotation_x.to_string(),
                 InputField::MainRotationX,
+                true,
             );
             spawn_input_row(
                 panel,
                 "Y:",
                 &CUBE_CONFIG.main_rotation_y.to_string(),
                 InputField::MainRotationY,
+                true,
             );
             spawn_input_row(
                 panel,
                 "Z:",
                 &CUBE_CONFIG.main_rotation_z.to_string(),
                 InputField::MainRotationZ,
+                true,
             );
         });
 }
@@ -358,18 +335,21 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                 "X:",
                 &CUBE_CONFIG.leaf_rotation_x.to_string(),
                 InputField::LeafRotationX,
+                true,
             );
             spawn_input_row(
                 panel,
                 "Y:",
                 &CUBE_CONFIG.leaf_rotation_y.to_string(),
                 InputField::LeafRotationY,
+                true,
             );
             spawn_input_row(
                 panel,
                 "Z:",
                 &CUBE_CONFIG.leaf_rotation_z.to_string(),
                 InputField::LeafRotationZ,
+                true,
             );
 
             panel.spawn((
@@ -389,18 +369,21 @@ fn spawn_leaf_config_panel(commands: &mut Commands) {
                 "X:",
                 &CUBE_CONFIG.leaf_position_x.to_string(),
                 InputField::LeafTranslationX,
+                false,
             );
             spawn_input_row(
                 panel,
                 "Y:",
                 &CUBE_CONFIG.leaf_position_y.to_string(),
                 InputField::LeafTranslationY,
+                false,
             );
             spawn_input_row(
                 panel,
                 "Z:",
                 &CUBE_CONFIG.leaf_position_z.to_string(),
                 InputField::LeafTranslationZ,
+                false,
             );
         });
 }
@@ -444,18 +427,21 @@ fn spawn_light_position_panel(commands: &mut Commands) {
                 "X:",
                 &LIGHT_POSITION_X.to_string(),
                 InputField::LightPositionX,
+                false,
             );
             spawn_input_row(
                 panel,
                 "Y:",
                 &LIGHT_POSITION_Y.to_string(),
                 InputField::LightPositionY,
+                false,
             );
             spawn_input_row(
                 panel,
                 "Z:",
                 &LIGHT_POSITION_Z.to_string(),
                 InputField::LightPositionZ,
+                false,
             );
         });
 }
@@ -465,6 +451,7 @@ fn spawn_input_row(
     label: &str,
     initial: &str,
     field_type: InputField,
+    with_buttons: bool,
 ) {
     parent
         .spawn(Node {
@@ -486,6 +473,10 @@ fn spawn_input_row(
                     TITLE_TEXT_COLOR.2,
                 )),
             ));
+
+            if with_buttons {
+                spawn_increment_button(row, "▼", field_type, -INCREMENT_AMOUNT);
+            }
 
             row.spawn((
                 Button,
@@ -525,6 +516,10 @@ fn spawn_input_row(
                 ));
             });
 
+            if with_buttons {
+                spawn_increment_button(row, "▲", field_type, INCREMENT_AMOUNT);
+            }
+
             row.spawn((
                 Text::new("degrees"),
                 TextFont {
@@ -535,6 +530,45 @@ fn spawn_input_row(
                     SECTION_TEXT_COLOR.0,
                     SECTION_TEXT_COLOR.1,
                     SECTION_TEXT_COLOR.2,
+                )),
+            ));
+        });
+}
+
+fn spawn_increment_button(
+    parent: &mut ChildSpawnerCommands,
+    label: &str,
+    target: InputField,
+    delta: f32,
+) {
+    parent
+        .spawn((
+            Button,
+            Node {
+                width: Val::Px(INCREMENT_BUTTON_SIZE),
+                height: Val::Px(INCREMENT_BUTTON_SIZE),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            BackgroundColor(Color::srgb(
+                INPUT_BG_COLOR.0,
+                INPUT_BG_COLOR.1,
+                INPUT_BG_COLOR.2,
+            )),
+            IncrementButton { target, delta },
+        ))
+        .with_children(|button| {
+            button.spawn((
+                Text::new(label),
+                TextFont {
+                    font_size: INPUT_FONT_SIZE,
+                    ..default()
+                },
+                TextColor(Color::srgb(
+                    TITLE_TEXT_COLOR.0,
+                    TITLE_TEXT_COLOR.1,
+                    TITLE_TEXT_COLOR.2,
                 )),
             ));
         });

@@ -5,13 +5,11 @@ use bevy::{camera::ScalingMode, prelude::*};
 use super::components::*;
 
 // Rotation constants
-const KEYBOARD_ROTATION_SPEED: f32 = 2.0;
 const AUTO_ROTATION_SPEED_Y: f32 = 1.0;
 const AUTO_ROTATION_SPEED_X: f32 = 0.5;
 
 // Cube constants
 const CUBE_SIZE: f32 = 1.0;
-const CUBE_Y_POSITION: f32 = 0.5;
 const SECOND_CUBE_X_OFFSET: f32 = 0.8;
 const SECOND_CUBE_ROTATION_DEGREES: f32 = 45.0;
 
@@ -48,7 +46,7 @@ pub fn setup(
                 MAIN_CUBE_COLOR.1,
                 MAIN_CUBE_COLOR.2,
             ))),
-            Transform::from_xyz(0.0, CUBE_Y_POSITION, 0.0).with_rotation(Quat::from_euler(
+            Transform::from_xyz(0.0, 0.0, 0.0).with_rotation(Quat::from_euler(
                 EulerRot::XYZ,
                 MAIN_CUBE_INITIAL_ROTATION.0.to_radians(),
                 MAIN_CUBE_INITIAL_ROTATION.1.to_radians(),
@@ -97,8 +95,7 @@ pub fn setup(
         DespawnOnExit(AppState::Cubes),
     ));
 
-    // Camera (isometric)
-    let d = CAMERA_DISTANCE;
+    // Camera (head-on, looking down Z axis)
     commands.spawn((
         Camera3d::default(),
         Projection::from(OrthographicProjection {
@@ -107,8 +104,8 @@ pub fn setup(
             },
             ..OrthographicProjection::default_3d()
         }),
-        Transform::from_xyz(d, d, d)
-            .looking_at(Vec3::new(0.0, CUBE_Y_POSITION, 0.0), Vec3::Y),
+        Transform::from_xyz(0.0, 0.0, CAMERA_DISTANCE)
+            .looking_at(Vec3::ZERO, Vec3::Y),
         DespawnOnExit(AppState::Cubes),
     ));
 }
@@ -130,31 +127,10 @@ pub fn rotate_cube(
         return;
     }
 
-    let keyboard_delta = time.delta_secs() * KEYBOARD_ROTATION_SPEED;
-
-    for mut transform in &mut query {
-        if auto_rotation.enabled {
+    if auto_rotation.enabled {
+        for mut transform in &mut query {
             transform.rotate_y(time.delta_secs() * AUTO_ROTATION_SPEED_Y);
             transform.rotate_x(time.delta_secs() * AUTO_ROTATION_SPEED_X);
-        }
-
-        if keyboard.pressed(KeyCode::KeyJ) {
-            transform.rotate_local_x(keyboard_delta);
-        }
-        if keyboard.pressed(KeyCode::KeyU) {
-            transform.rotate_local_x(-keyboard_delta);
-        }
-        if keyboard.pressed(KeyCode::KeyK) {
-            transform.rotate_local_y(keyboard_delta);
-        }
-        if keyboard.pressed(KeyCode::KeyI) {
-            transform.rotate_local_y(-keyboard_delta);
-        }
-        if keyboard.pressed(KeyCode::KeyL) {
-            transform.rotate_local_z(keyboard_delta);
-        }
-        if keyboard.pressed(KeyCode::KeyO) {
-            transform.rotate_local_z(-keyboard_delta);
         }
     }
 }
